@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="POSApp.Setting"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:POSApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="20" RowSpacing="10">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Title row -->
+            <RowDefinition Height="Auto"/>
+            <!-- Controls row -->
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <TextBlock Text="Select Receipt Printer:" 
+               FontSize="20" 
+               FontWeight="Bold" 
+               Margin="0,0,0,10" 
+               Grid.Row="0"/>
+
+        <!-- Controls in one row -->
+        <Grid Grid.Row="1" ColumnSpacing="10" HorizontalAlignment="Left">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <!-- ComboBox -->
+                <ColumnDefinition Width="200"/>
+                <!-- Save Button -->
+                <ColumnDefinition Width="*"/>
+                <!-- StatusText expands -->
+            </Grid.ColumnDefinitions>
+
+            <ComboBox x:Name="PrinterComboBox" Grid.Column="0" PlaceholderText="Select Printer"/>
+
+            <Button Content="Save Printer" 
+                Grid.Column="1" 
+                Click="SavePrinter_Click"/>
+
+            <TextBlock x:Name="StatusText" 
+                   Grid.Column="2" 
+                   FontSize="14" 
+                   Foreground="Green" 
+                   VerticalAlignment="Center"/>
+        </Grid>
+
+    </Grid>
+</Page>

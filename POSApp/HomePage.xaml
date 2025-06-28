@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="POSApp.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:POSApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,20,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Products Section -->
+        <Grid Grid.Column="0" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Search Bar -->
+            <TextBox x:Name="ProductSearchBox"
+                    Grid.Row="0"
+                    PlaceholderText="Search products..."
+                    Margin="0,0,0,20"
+                    Height="40"
+                    FontSize="16"
+                    TextChanged="ProductSearchBox_TextChanged"
+                     CornerRadius="4">
+                <TextBox.Resources>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Background" Value="{ThemeResource SystemControlAcrylicWindowBrush}"/>
+                        <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundBaseLowBrush}"/>
+                    </Style>
+                </TextBox.Resources>
+            </TextBox>
+
+            <!-- Products Grid -->
+            <ScrollViewer Grid.Row="1" 
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Disabled">
+                <GridView x:Name="ProductsGridView"
+                         SelectionMode="None"
+                         ItemClick="ProductsGridView_ItemClick"
+                         IsItemClickEnabled="True">
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="5" HorizontalAlignment="Center"/>
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="local:Product">
+                            <Border Background="{ThemeResource SystemControlAcrylicElementBrush}"
+                                   CornerRadius="8"
+                                   Padding="12"
+                                   Margin="8"
+                                   Width="180"
+                                   Height="220"
+                                   BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                   BorderThickness="1">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="120"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Product Image -->
+                                    <Border Grid.Row="0" 
+                                           CornerRadius="6"
+                                           Background="{ThemeResource SystemControlBackgroundBaseLowBrush}">
+                                        <Image Source="{x:Bind ProductImageSource}"
+                                              Stretch="UniformToFill"/>
+                                    </Border>
+
+                                    <!-- Product Name -->
+                                    <TextBlock Grid.Row="1"
+                                              Text="{x:Bind Name}"
+                                              FontSize="14"
+                                              FontWeight="SemiBold"
+                                              TextWrapping="Wrap"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"
+                                              TextAlignment="Center"
+                                              Margin="0,8"/>
+
+                                    <!-- Product Price -->
+                                    <TextBlock Grid.Row="2"
+                                              FontSize="16"
+                                              FontWeight="Bold"
+                                              Foreground="{ThemeResource SystemAccentColor}"
+                                              HorizontalAlignment="Center">
+                                        <Run Text="PKR "/><Run Text="{x:Bind Price}"/>
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- Order Section -->
+        <Border Grid.Column="1" 
+               Background="{ThemeResource SystemControlAcrylicWindowBrush}"
+               BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+               BorderThickness="1"
+               Margin="0,20,20,20"
+               CornerRadius="8">
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Order Header -->
+                <TextBlock Grid.Row="0"
+                          Text="Current Order"
+                          FontSize="22"
+                          FontWeight="Bold"
+                          Margin="0,0,0,20"
+                          HorizontalAlignment="Center"/>
+
+                <!-- Order Items -->
+                <ScrollViewer Grid.Row="1"
+                             VerticalScrollBarVisibility="Auto">
+                    <ListView x:Name="OrderItemsListView"
+                             SelectionMode="None"
+                             Background="Transparent"
+                             BorderThickness="0">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="local:OrderItem">
+                                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                       CornerRadius="12"
+                                       Padding="16"
+                                       Margin="0,8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Product Name -->
+                                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                                  Text="{x:Bind Product.Name}"
+                                                  FontWeight="SemiBold"
+                                                  FontSize="16"
+                                                  TextTrimming="CharacterEllipsis"/>
+
+                                        <!-- Remove Button -->
+                                        <Button Grid.Row="0" Grid.Column="1"
+                                               Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                                               BorderThickness="0"
+                                               Width="32" Height="32"
+                                               CornerRadius="16"
+                                               Click="RemoveOrderItem_Click"
+                                               Tag="{x:Bind}">
+                                            <FontIcon Glyph="&#xE711;" FontSize="14" Foreground="White"/>
+                                        </Button>
+
+                                        <!-- Quantity and Price -->
+                                        <StackPanel Grid.Row="1" Grid.ColumnSpan="2"
+                                                   Orientation="Horizontal"
+                                                   Margin="0,0,0,0">
+                                            <Button Content="-"
+                                                   Width="32" Height="32"
+                                                   Padding="0"
+                                                   FontSize="18"
+                                                    HorizontalContentAlignment="Center"
+                                                    VerticalContentAlignment="Center"
+                                                   Style="{ThemeResource ButtonRevealStyle}"
+                                                   Click="DecreaseQuantity_Click"
+                                                   Tag="{x:Bind}"/>
+                                            <TextBlock Text="{x:Bind Quantity, Mode=OneWay}"
+                                                      VerticalAlignment="Center"
+                                                      Margin="16,0"
+                                                      MinWidth="24"
+                                                      TextAlignment="Center"/>
+                                            <Button Content="+"
+                                                   Width="32" Height="32"
+                                                   Padding="0"
+                                                   FontSize="18"
+                                                   HorizontalContentAlignment="Center"
+                                                   VerticalContentAlignment="Center"
+                                                   Style="{ThemeResource ButtonRevealStyle}"
+                                                   Click="IncreaseQuantity_Click"
+                                                   Tag="{x:Bind}"/>
+                                            <TextBlock VerticalAlignment="Center"
+                                                      Margin="24,0,0,0"
+                                                      FontWeight="Bold"
+                                                      FontSize="16">
+                                                <Run Text="PKR "/><Run Text="{x:Bind Total}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </ScrollViewer>
+
+                <!-- Subtotal -->
+                <Border Grid.Row="2"
+                       Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                       CornerRadius="12"
+                       Padding="16"
+                       Margin="0,16,0,16">
+                    <TextBlock FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center">
+                        <Run Text="Subtotal: PKR "/><Run x:Name="SubtotalRun" Text="0.00"/>
+                    </TextBlock>
+                </Border>
+
+                <!-- Print Button -->
+                <Button x:Name="PrintButton"
+                       Grid.Row="3"
+                       Content="Print Order"
+                       HorizontalAlignment="Stretch"
+                       Height="50"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       Margin="0,0,0,8"
+                       Style="{ThemeResource AccentButtonStyle}"
+                       Click="PrintButton_Click"/>
+
+                <!-- Preview Receipt Button -->
+                <Button x:Name="PreviewReceiptButton"
+                        Grid.Row="4"
+                        Content="Preview Receipt"
+                        HorizontalAlignment="Stretch"
+                        Height="50"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="0,8,0,8"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        Click="PreviewReceiptButton_Click"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>
