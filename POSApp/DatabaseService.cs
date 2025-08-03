@@ -31,6 +31,7 @@ namespace POSApp
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Name TEXT NOT NULL,
                     Price DECIMAL(10,2) NOT NULL,
+                    Category TEXT NOT NULL,
                     ImagePath TEXT
                 )";
 
@@ -45,7 +46,7 @@ namespace POSApp
             await connection.OpenAsync();
 
             var command = connection.CreateCommand();
-            command.CommandText = "SELECT Id, Name, Price, ImagePath FROM Products ORDER BY Name";
+            command.CommandText = "SELECT Id, Name, Price, Category, ImagePath FROM Products ORDER BY Name";
 
             using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -55,6 +56,7 @@ namespace POSApp
                     Id = reader.GetInt32("Id"),
                     Name = reader.GetString("Name"),
                     Price = reader.GetDecimal("Price"),
+                    Category = reader.GetString("Category"),
                     ImagePath = reader.IsDBNull("ImagePath") ? "" : reader.GetString("ImagePath")
                 });
             }
@@ -69,12 +71,13 @@ namespace POSApp
 
             var command = connection.CreateCommand();
             command.CommandText = @"
-                INSERT INTO Products (Name, Price, ImagePath) 
-                VALUES (@name, @price, @imagePath);
+                INSERT INTO Products (Name, Price, Category, ImagePath) 
+                VALUES (@name, @price, @category, @imagePath);
                 SELECT last_insert_rowid();";
 
             command.Parameters.AddWithValue("@name", product.Name);
             command.Parameters.AddWithValue("@price", product.Price);
+            command.Parameters.AddWithValue("@category", product.Category ?? "");
             command.Parameters.AddWithValue("@imagePath", product.ImagePath ?? "");
 
             var id = Convert.ToInt32(await command.ExecuteScalarAsync());
@@ -90,12 +93,13 @@ namespace POSApp
             var command = connection.CreateCommand();
             command.CommandText = @"
                 UPDATE Products 
-                SET Name = @name, Price = @price, ImagePath = @imagePath 
+                SET Name = @name, Price = @price, Category=@category, ImagePath = @imagePath 
                 WHERE Id = @id";
 
             command.Parameters.AddWithValue("@id", product.Id);
             command.Parameters.AddWithValue("@name", product.Name);
             command.Parameters.AddWithValue("@price", product.Price);
+            command.Parameters.AddWithValue("@category", product.Category ?? "");
             command.Parameters.AddWithValue("@imagePath", product.ImagePath ?? "");
 
             await command.ExecuteNonQueryAsync();
@@ -119,7 +123,7 @@ namespace POSApp
             await connection.OpenAsync();
 
             var command = connection.CreateCommand();
-            command.CommandText = "SELECT Id, Name, Price, ImagePath FROM Products WHERE Id = @id";
+            command.CommandText = "SELECT Id, Name, Price, Category, ImagePath FROM Products WHERE Id = @id";
             command.Parameters.AddWithValue("@id", id);
 
             using var reader = await command.ExecuteReaderAsync();
@@ -130,6 +134,7 @@ namespace POSApp
                     Id = reader.GetInt32("Id"),
                     Name = reader.GetString("Name"),
                     Price = reader.GetDecimal("Price"),
+                    Category = reader.GetString("Category"),    
                     ImagePath = reader.IsDBNull("ImagePath") ? "" : reader.GetString("ImagePath")
                 };
             }

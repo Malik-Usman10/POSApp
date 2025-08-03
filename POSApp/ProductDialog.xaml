@@ -10,70 +10,73 @@
     DefaultButton="Primary"
     RequestedTheme="Dark">
 
-    <Grid Width="400" Height="500">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="300"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <ScrollViewer MaxHeight="500" VerticalScrollBarVisibility="Hidden">
+        <Grid Width="400">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="300"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <!-- Image Section Header -->
-        <TextBlock Grid.Row="0"
+            <!-- Image Section Header -->
+            <TextBlock Grid.Row="0"
                    Text="Product Image"
                    FontSize="16"
                    FontWeight="SemiBold"
                    Margin="0,0,0,10"/>
 
-        <!-- Image Display and Selection -->
-        <Border Grid.Row="1"
+            <!-- Image Display and Selection -->
+            <Border Grid.Row="1"
                 Background="{ThemeResource ControlFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource TextFillColorTertiaryBrush}"
                 BorderThickness="2"
                 CornerRadius="8"
                 Margin="0,0,0,20">
-            <Grid>
-                <!-- Default Image Placeholder -->
-                <StackPanel x:Name="ImagePlaceholder"
+                <Grid>
+                    <!-- Default Image Placeholder -->
+                    <StackPanel x:Name="ImagePlaceholder"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"
                            Visibility="Visible">
-                    <FontIcon Glyph="&#xEB9F;"
+                        <FontIcon Glyph="&#xEB9F;"
                              FontSize="48"
                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                              HorizontalAlignment="Center"
                              Margin="0,0,0,10"/>
-                    <TextBlock Text="Click to select image"
+                        <TextBlock Text="Click to select image"
                               FontSize="14"
                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                               HorizontalAlignment="Center"/>
-                </StackPanel>
+                    </StackPanel>
 
-                <!-- Selected Image -->
-                <Image x:Name="ProductImage"
+                    <!-- Selected Image -->
+                    <Image x:Name="ProductImage"
                        Stretch="UniformToFill"
                        Visibility="Collapsed"/>
 
-                <!-- Click area for image selection -->
-                <Button x:Name="SelectImageButton"
+                    <!-- Click area for image selection -->
+                    <Button x:Name="SelectImageButton"
                        Background="Transparent"
                        BorderThickness="0"
                        HorizontalAlignment="Stretch"
                        VerticalAlignment="Stretch"
                        Click="SelectImageButton_Click"/>
-            </Grid>
-        </Border>
+                </Grid>
+            </Border>
 
-        <!-- Product Name -->
-        <TextBlock Grid.Row="2"
+            <!-- Product Name -->
+            <TextBlock Grid.Row="2"
                    Text="Product Name"
                    FontSize="16"
                    FontWeight="SemiBold"
                    Margin="0,0,0,8"/>
 
-        <TextBox x:Name="ProductNameTextBox"
+            <TextBox x:Name="ProductNameTextBox"
                  Grid.Row="3"
                  PlaceholderText="Enter product name..."
                  FontSize="14"
@@ -81,23 +84,39 @@
                  HorizontalAlignment="Stretch"
                  Margin="0,0,0,20"
                  CornerRadius="4">
-            <TextBox.Resources>
-                <Style TargetType="TextBox">
-                    <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}"/>
-                    <Setter Property="BorderBrush" Value="{ThemeResource TextFillColorTertiaryBrush}"/>
-                </Style>
-            </TextBox.Resources>
-        </TextBox>
+                <TextBox.Resources>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}"/>
+                        <Setter Property="BorderBrush" Value="{ThemeResource TextFillColorTertiaryBrush}"/>
+                    </Style>
+                </TextBox.Resources>
+            </TextBox>
 
-        <!-- Product Price -->
-        <TextBlock Grid.Row="4"
+            <!-- Product Category -->
+            <TextBlock Grid.Row="4"
+                   Text="Product Category"
+                   FontSize="16"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,8"/>
+
+            <ComboBox x:Name="CategoryComboBox" PlaceholderText="Select a category" Grid.Row="5" Margin="0,0,0,8">
+                <ComboBoxItem Content="Karahi"/>
+                <ComboBoxItem Content="Handi"/>
+                <ComboBoxItem Content="Tikka"/>
+                <ComboBoxItem Content="Kabab"/>
+                <ComboBoxItem Content="Tandoor"/>
+                <ComboBoxItem Content="Drinks"/>
+            </ComboBox>
+
+            <!-- Product Price -->
+            <TextBlock Grid.Row="6"
                    Text="Product Price (Rs)"
                    FontSize="16"
                    FontWeight="SemiBold"
                    />
 
-        <NumberBox x:Name="ProductPriceNumberBox"
-                   Grid.Row="5"
+            <NumberBox x:Name="ProductPriceNumberBox"
+                   Grid.Row="7"
                    PlaceholderText="0.00"
                    FontSize="14"
                    Minimum="0"
@@ -105,12 +124,13 @@
                    VerticalAlignment="Top"
                    HorizontalAlignment="Stretch"
                    Margin="0,8,0,0">
-            <NumberBox.Resources>
-                <Style TargetType="NumberBox">
-                    <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}"/>
-                    <Setter Property="BorderBrush" Value="{ThemeResource TextFillColorTertiaryBrush}"/>
-                </Style>
-            </NumberBox.Resources>
-        </NumberBox>
-    </Grid>
+                <NumberBox.Resources>
+                    <Style TargetType="NumberBox">
+                        <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}"/>
+                        <Setter Property="BorderBrush" Value="{ThemeResource TextFillColorTertiaryBrush}"/>
+                    </Style>
+                </NumberBox.Resources>
+            </NumberBox>
+        </Grid>
+    </ScrollViewer>
 </ContentDialog>

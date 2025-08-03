@@ -178,11 +178,19 @@ namespace POSApp
                 return;
             }
 
+            if (CategoryComboBox.SelectedItem == null)
+            {
+                args.Cancel = true;
+                ShowValidationError("Please Select a product category.");
+                return;
+            }
+
             // Create or update product
             if (_isEditMode && Product != null)
             {
                 Product.Name = ProductNameTextBox.Text.Trim();
                 Product.Price = (decimal)ProductPriceNumberBox.Value;
+                Product.Category = (CategoryComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty;
 
                 if (!string.IsNullOrEmpty(_selectedImagePath))
                 {
@@ -195,6 +203,7 @@ namespace POSApp
                 {
                     Name = ProductNameTextBox.Text.Trim(),
                     Price = (decimal)ProductPriceNumberBox.Value,
+                    Category = (CategoryComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty,
                     ImagePath = _selectedImagePath ?? string.Empty
                 };
             }

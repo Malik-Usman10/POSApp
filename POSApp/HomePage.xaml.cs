@@ -1,14 +1,15 @@
-﻿using Microsoft.UI.Text;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.UI;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Printing;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics.Printing;
 using Windows.Graphics.Printing.OptionDetails;
@@ -27,6 +28,7 @@ namespace POSApp
         private ObservableCollection<Product> _filteredProducts;
         private ObservableCollection<OrderItem> _orderItems;
         private DatabaseService _databaseService;
+        private Button _selectedCategoryButton;
         public HomePage()
         {
             InitializeComponent();
@@ -35,14 +37,16 @@ namespace POSApp
             _filteredProducts = new ObservableCollection<Product>();
             _orderItems = new ObservableCollection<OrderItem>();
 
+
             OrderItemsListView.ItemsSource = _orderItems;
-            ProductsGridView.ItemsSource = _filteredProducts;
+            ProductsListView.ItemsSource = _filteredProducts;
 
             Loaded += HomePage_Loaded;
         }
         private async void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadProducts();
+            CategoryButton_Click(KarahiButton, null);
         }
 
         private async Task LoadProducts()
@@ -54,10 +58,10 @@ namespace POSApp
                 _filteredProducts.Clear();
 
                 foreach (var product in products)
-                {
                     _products.Add(product);
+
+                foreach (var product in products.Where(p => p.Category == "Karahi"))
                     _filteredProducts.Add(product);
-                }
             }
             catch (Exception ex)
             {
@@ -73,16 +77,31 @@ namespace POSApp
             }
         }
 
-        private void ProductSearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        // Filter Product based on Category Buttons Click
+        private void CategoryButton_Click(object sender, RoutedEventArgs e)
         {
-            var searchText = ProductSearchBox.Text.ToLower();
+            if (sender is Button button && button.Tag is string category)
+            {
+                if (_selectedCategoryButton != null)
+                {
+                    _selectedCategoryButton.ClearValue(Button.BackgroundProperty);
+                    _selectedCategoryButton.ClearValue(Button.ForegroundProperty);
+                    _selectedCategoryButton.ClearValue(Button.BorderBrushProperty);
+                }
+
+                // Highlight current
+                button.Background = new SolidColorBrush(Colors.SkyBlue);
+                button.Foreground = new SolidColorBrush(Colors.White);
+                button.BorderBrush = new SolidColorBrush(Colors.SkyBlue);
+
+                _selectedCategoryButton = button;
+                FilterProductsByCategory(category);
+            }
+        }
+        private void FilterProductsByCategory(string category)
+        {
             _filteredProducts.Clear();
-
-            var filtered = string.IsNullOrEmpty(searchText)
-                ? _products
-                : _products.Where(p => p.Name.ToLower().Contains(searchText));
-
-            foreach (var product in filtered)
+            foreach (var product in _products.Where(p => p.Category == category))
             {
                 _filteredProducts.Add(product);
             }
@@ -106,10 +125,20 @@ namespace POSApp
             }
             else
             {
-                _orderItems.Add(new OrderItem { Product = product, Quantity = 1 });
-            }
+                var newItem = new OrderItem { Product = product, Quantity = 1 };
 
+                // Find the index where the product should be inserted (high to low unit price)
+                int insertIndex = 0;
+                while (insertIndex < _orderItems.Count && _orderItems[insertIndex].Product.Price >= product.Price)
+                {
+                    insertIndex++;
+                }
+
+                _orderItems.Insert(insertIndex, newItem);
+
+            }
             UpdateSubtotal();
+
         }
 
         private void IncreaseQuantity_Click(object sender, RoutedEventArgs e)

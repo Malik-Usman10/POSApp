@@ -16,6 +16,7 @@ namespace POSApp
         private string _name;
         private decimal _price;
         private string _imagePath;
+        private string _category;
 
         public int Id
         {
@@ -56,6 +57,15 @@ namespace POSApp
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(ProductImageSource));
             }
+        }
+
+        public string Category 
+        { 
+            get => _category;
+            set { 
+                 _category = value;
+                  OnPropertyChanged();
+            } 
         }
 
         public BitmapImage ProductImageSource
