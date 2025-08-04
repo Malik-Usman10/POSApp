@@ -59,13 +59,14 @@ namespace POSApp
             }
         }
 
-        public string Category 
-        { 
+        public string Category
+        {
             get => _category;
-            set { 
-                 _category = value;
-                  OnPropertyChanged();
-            } 
+            set
+            {
+                _category = value;
+                OnPropertyChanged();
+            }
         }
 
         public BitmapImage ProductImageSource
@@ -123,6 +124,59 @@ namespace POSApp
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    // Model for the Orders
+    public class Order : INotifyPropertyChanged
+    {
+        private bool _isPaid;
+        private int _id;
+        private DateTime _orderDate;
+        private decimal _totalAmount;
+
+        public int Id
+        {
+            get => _id;
+            set
+            {
+                _id = value;
+                OnPropertyChanged();
+            }
+        }
+        public DateTime OrderDate
+        {
+            get => _orderDate;
+            set
+            {
+                _orderDate = value;
+                OnPropertyChanged();
+            }
+        }
+        public bool IsPaid
+        {
+            get => _isPaid;
+            set
+            {
+                _isPaid = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public decimal TotalAmount
+        {
+            get => _totalAmount;
+            set
+            {
+                _totalAmount = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

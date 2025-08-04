@@ -196,7 +196,21 @@ namespace POSApp
                 return;
             }
 
+            // Prepare the Order
+            var order = new Order
+            {
+                OrderDate = DateTime.Now,
+                IsPaid = PaidCheckbox.IsChecked == true,
+                TotalAmount = _orderItems.Sum(item => item.Total)
+            };
+
+            await _databaseService.InsertOrderAsync(order);
+
             await PrintOrderSlip();
+
+            _orderItems.Clear(); // Clear the order items after printing
+            UpdateSubtotal(); // Reset subtotal display
+            PaidCheckbox.IsChecked = true; // Reset paid checkbox
         }
 
         private async Task PrintOrderSlip()

@@ -17,6 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="HomePage.xaml" />
+    <None Remove="OrdersHistory.xaml" />
     <None Remove="ProductDialog.xaml" />
     <None Remove="ProductUploadPage.xaml" />
     <None Remove="Setting.xaml" />
@@ -50,6 +51,11 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4188" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="OrdersHistory.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Setting.xaml">

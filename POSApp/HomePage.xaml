@@ -137,6 +137,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <!-- Order Header -->
@@ -240,9 +241,21 @@
                     </TextBlock>
                 </Border>
 
+                <StackPanel Grid.Row="3"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Stretch"
+                            Spacing="10"
+                            Margin="0,0,0,8">
+                    <CheckBox x:Name="PaidCheckbox" 
+                              Content="Paid" 
+                              FontSize="18" 
+                              Margin="0,0,0,12"
+                              IsChecked="True" />
+                </StackPanel>
+
                 <!-- Print Button -->
                 <Button x:Name="PrintButton"
-                   Grid.Row="3"
+                   Grid.Row="4"
                    Content="Print Order"
                    HorizontalAlignment="Stretch"
                    Height="50"
@@ -254,7 +267,7 @@
 
                 <!-- Preview Receipt Button -->
                 <Button x:Name="PreviewReceiptButton"
-                    Grid.Row="4"
+                    Grid.Row="5"
                     Content="Preview Receipt"
                     HorizontalAlignment="Stretch"
                     Height="50"

@@ -68,6 +68,19 @@
                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
                 </Button>
 
+                <Button x:Name="OrdersButton"
+                       Width="50" 
+                       Height="50"
+                       Margin="5,10"
+                       Background="Transparent"
+                       BorderThickness="0"
+                       Click="OrdersButton_Click"
+                       ToolTipService.ToolTip="Orders History">
+                    <FontIcon Glyph="&#xE8A7;" 
+                             FontSize="24"
+                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
+                </Button>
+
             </StackPanel>
         </Border>
 

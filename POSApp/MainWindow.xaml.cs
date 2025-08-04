@@ -45,5 +45,10 @@ namespace POSApp
         {
             MainFrame.Navigate(typeof(Setting));
         }
+        // method for navigating to the orders page
+        private void OrdersButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(typeof(OrdersHistory));
+        }
     }
 }

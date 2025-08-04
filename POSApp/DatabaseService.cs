@@ -26,6 +26,7 @@ namespace POSApp
             await connection.OpenAsync();
 
             var createTableCommand = connection.CreateCommand();
+
             createTableCommand.CommandText = @"
                 CREATE TABLE IF NOT EXISTS Products (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,8 +34,15 @@ namespace POSApp
                     Price DECIMAL(10,2) NOT NULL,
                     Category TEXT NOT NULL,
                     ImagePath TEXT
-                )";
-
+                );
+                
+              CREATE TABLE IF NOT EXISTS Orders (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    OrderDate TEXT NOT NULL,
+                    IsPaid INTEGER NOT NULL,
+                    TotalAmount DECIMAL(10,2) NOT NULL
+               );
+            ";
             await createTableCommand.ExecuteNonQueryAsync();
         }
 
@@ -134,12 +142,66 @@ namespace POSApp
                     Id = reader.GetInt32("Id"),
                     Name = reader.GetString("Name"),
                     Price = reader.GetDecimal("Price"),
-                    Category = reader.GetString("Category"),    
+                    Category = reader.GetString("Category"),
                     ImagePath = reader.IsDBNull("ImagePath") ? "" : reader.GetString("ImagePath")
                 };
             }
 
             return null;
         }
+
+        // Insert Order in the Order table
+        public async Task<int> InsertOrderAsync(Order order)
+        {
+            using var connection = new SqliteConnection($"Data Source={_databasePath}");
+            await connection.OpenAsync();
+            var command = connection.CreateCommand();
+            command.CommandText = @"
+                INSERT INTO Orders (OrderDate, IsPaid, TotalAmount) 
+                VALUES (@orderDate, @isPaid, @totalAmount);
+                SELECT last_insert_rowid();";
+
+            command.Parameters.AddWithValue("@orderDate", order.OrderDate.ToString("s"));
+            command.Parameters.AddWithValue("@isPaid", order.IsPaid ? 1 : 0);
+            command.Parameters.AddWithValue("@totalAmount", order.TotalAmount);
+
+            var id = Convert.ToInt32(await command.ExecuteScalarAsync());
+            order.Id = id;
+            return id;
+        }
+
+        public async Task<List<Order>> LoadOrdersByDateAsync(DateTime date)
+        {
+            using var connection = new SqliteConnection($"Data Source={_databasePath}");
+            await connection.OpenAsync();
+
+            var command = connection.CreateCommand();
+            command.CommandText = @"
+                        SELECT Id, OrderDate, IsPaid, TotalAmount 
+                        FROM Orders
+                        WHERE date(OrderDate) = date(@selectedDate)
+                        ORDER BY OrderDate DESC;";
+
+            command.Parameters.AddWithValue("@selectedDate", date.Date);
+
+            var orders = new List<Order>();
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var order = new Order
+                {
+                    Id = reader.GetInt32(0),
+                    OrderDate = reader.GetDateTime(1),
+                    IsPaid = reader.GetInt32(2) == 1,
+                    TotalAmount = reader.GetDecimal(3)
+                };
+                orders.Add(order);
+            }
+
+            return orders;
+        }
+
+
     }
 }
