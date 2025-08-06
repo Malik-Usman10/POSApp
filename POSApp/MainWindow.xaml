@@ -50,20 +50,7 @@
                        BorderThickness="0"
                        Click="ProductUploadButton_Click"
                        ToolTipService.ToolTip="Product Management">
-                    <FontIcon Glyph="&#xE895;" 
-                             FontSize="24"
-                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
-                </Button>
-
-                <Button x:Name="SettingButton"
-                       Width="50" 
-                       Height="50"
-                       Margin="5,10"
-                       Background="Transparent"
-                       BorderThickness="0"
-                       Click="SettingButton_Click"
-                       ToolTipService.ToolTip="Product Management">
-                    <FontIcon Glyph="&#xE713;" 
+                    <FontIcon Glyph="&#xE898;" 
                              FontSize="24"
                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
                 </Button>
@@ -76,7 +63,19 @@
                        BorderThickness="0"
                        Click="OrdersButton_Click"
                        ToolTipService.ToolTip="Orders History">
-                    <FontIcon Glyph="&#xE8A7;" 
+                    <FontIcon Glyph="&#xE8C8;" 
+                             FontSize="24"
+                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
+                </Button>
+                <Button x:Name="SettingButton"
+                       Width="50" 
+                       Height="50"
+                       Margin="5,10"
+                       Background="Transparent"
+                       BorderThickness="0"
+                       Click="SettingButton_Click"
+                       ToolTipService.ToolTip="Product Management">
+                    <FontIcon Glyph="&#xE713;" 
                              FontSize="24"
                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
                 </Button>

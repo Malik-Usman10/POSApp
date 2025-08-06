@@ -77,6 +77,29 @@ namespace POSApp
             }
         }
 
+        // Search Product on TextChange in ProductSearchBox if text field is Null or Empty then show only products of selected category
+        private void ProductSearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var searchText = ProductSearchBox.Text.ToLower();
+            _filteredProducts.Clear();
+            if (string.IsNullOrEmpty(searchText))
+            {
+                // If search text is empty, show products of the selected category
+                foreach (var product in _products.Where(p => p.Category == _selectedCategoryButton?.Tag as string))
+                {
+                    _filteredProducts.Add(product);
+                }
+            }
+            else
+            {
+                // Filter products based on search text
+                foreach (var product in _products.Where(p => p.Name.ToLower().Contains(searchText)))
+                {
+                    _filteredProducts.Add(product);
+                }
+            }
+        }
+
         // Filter Product based on Category Buttons Click
         private void CategoryButton_Click(object sender, RoutedEventArgs e)
         {

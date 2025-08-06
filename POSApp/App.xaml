@@ -18,7 +18,9 @@
                 <Setter Property="CornerRadius" Value="8"/>
                 <Setter Property="Padding" Value="16"/>
             </Style>
-
+            <Style TargetType="Button">
+                <Setter Property="FontFamily" Value="Microsoft Sans Serif"/>
+            </Style>
             <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
                 <Setter Property="FontSize" Value="24"/>
                 <Setter Property="FontWeight" Value="Bold"/>

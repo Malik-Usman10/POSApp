@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Padding="24" Background="{ThemeResource LayerFillColorDefaultBrush}" Margin="0,20,0,0">
+    <Grid Padding="24" Margin="0,20,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -78,6 +78,7 @@
                         Padding="2">
                         <ListView x:Name="PaidOrdersListView"
                                   VerticalAlignment="Stretch"
+                                  MaxHeight="600"
                                   SelectionMode="None">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="local:Order">
@@ -167,7 +168,9 @@
                         Padding="2">
                         <ListView x:Name="UnpaidOrdersListView" 
                               VerticalAlignment="Stretch"
+                              MaxHeight="600"
                               SelectionMode="None">
+
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="local:Order">
                                     <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"

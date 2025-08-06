@@ -27,7 +27,7 @@
         <!-- Controls in one row -->
         <Grid Grid.Row="1" ColumnSpacing="10" HorizontalAlignment="Left">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="300"/>
                 <!-- ComboBox -->
                 <ColumnDefinition Width="200"/>
                 <!-- Save Button -->
@@ -35,10 +35,19 @@
                 <!-- StatusText expands -->
             </Grid.ColumnDefinitions>
 
-            <ComboBox x:Name="PrinterComboBox" Grid.Column="0" PlaceholderText="Select Printer"/>
+            <ComboBox x:Name="PrinterComboBox" Grid.Column="0" PlaceholderText="Select Printer" Padding="30,10" CornerRadius="20" HorizontalAlignment="Stretch"/>
 
             <Button Content="Save Printer" 
-                Grid.Column="1" 
+                Grid.Column="1"
+                CornerRadius="20"
+                Width="150"
+                Height="40"
+                FontSize="14"
+                FontWeight="Normal"
+                Padding="0,0"
+                Background="{ThemeResource ControlFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                BorderThickness="1"
                 Click="SavePrinter_Click"/>
 
             <TextBlock x:Name="StatusText" 

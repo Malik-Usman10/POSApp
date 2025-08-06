@@ -17,22 +17,47 @@
         <!-- Products Section -->
         <Grid Grid.Column="0" Margin="20">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <!-- Search Bar -->
+            <TextBox Grid.Row="0"
+                    x:Name="ProductSearchBox"
+                    Grid.Column="0"
+                    PlaceholderText="Search products..."
+                    Height="40"
+                    HorizontalAlignment="Stretch"
+                    FontSize="16"
+                    Margin="0,0,0,20"
+                    Padding="20,10,0 ,0"
+                    TextChanged="ProductSearchBox_TextChanged"
+                     CornerRadius="20">
+                <TextBox.Resources>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}"/>
+                        <Setter Property="BorderBrush" Value="{ThemeResource TextFillColorTertiaryBrush}"/>
+                    </Style>
+                </TextBox.Resources>
+            </TextBox>
+
             <!-- Filter By Categories -->
-            <StackPanel Orientation="Horizontal" 
+            <StackPanel Grid.Row="1"
+                        Orientation="Horizontal" 
                         HorizontalAlignment="Center"
                         Spacing="20">
                 <StackPanel.Resources>
                     <Style TargetType="Button">
                         <Setter Property="Width" Value="100"/>
                         <Setter Property="Height" Value="40"/>
-                        <Setter Property="FontSize" Value="18"/>
+                        <Setter Property="FontSize" Value="14"/>
                         <Setter Property="FontWeight" Value="Medium"/>
-                        <Setter Property="Margin" Value="0,0,10,0"/>
                         <Setter Property="Padding" Value="10,0"/>
+                        <Setter Property="CornerRadius" Value="20"/>
+                        <Setter Property="Background" Value="{ThemeResource ControlFillColorDefaultBrush}"/>
+                        <Setter Property="BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}"/>
+                        <Setter Property="BorderThickness" Value="1"/>
                     </Style>
                 </StackPanel.Resources>
                 <Button x:Name="KarahiButton"
@@ -72,54 +97,111 @@
             </StackPanel>
 
             <!-- Products List -->
-            <ScrollViewer Grid.Row="1"
+            <ScrollViewer Grid.Row="2"
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled"
                           Margin="0,20,0,0">
-                <ListView x:Name="ProductsListView"
+                <GridView x:Name="ProductsListView"
                           SelectionMode="None"
                           ItemClick="ProductsGridView_ItemClick"
                           IsItemClickEnabled="True"
-                          HorizontalAlignment="Stretch">
-                    <ListView.ItemTemplate>
+                          HorizontalAlignment="Stretch"
+                          Padding="10"
+                          ScrollViewer.HorizontalScrollMode="Disabled"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+                    <!-- Responsive ItemsPanel for different screen sizes -->
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid Orientation="Horizontal"
+                               ItemWidth="280"
+                               ItemHeight="120"/>
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+
+                    <GridView.ItemTemplate>
                         <DataTemplate x:DataType="local:Product">
-                            <Border Background="{ThemeResource SystemControlAcrylicElementBrush}"
-                                    CornerRadius="4"
-                                    Padding="12"
-                                    Margin='10'
-                                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
-                                    BorderThickness="1">
-                                <Grid HorizontalAlignment="Stretch">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    CornerRadius="8"
+                                    Padding="16"
+                                    Margin="8"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    Width="264"
+                                    Height="104">
 
-                                    <!-- Left-aligned Text -->
-                                    <TextBlock Text="{x:Bind Name}"
-                                               Grid.Column="0"
-                                               FontSize="16"
-                                               FontWeight="SemiBold"
-                                               VerticalAlignment="Center" />
+                                <!-- Card hover effect -->
+                                <Border.Shadow>
+                                    <ThemeShadow />
+                                </Border.Shadow>
 
-                                    <!-- Right-aligned Text -->
-                                    <TextBlock
-                                               Grid.Column="1"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="{ThemeResource SystemAccentColor}"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Right">
-                                           <Run Text="PKR "/>
-                                           <Run Text="{x:Bind Price}"/>
-                                    </TextBlock>
-                                </Grid>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="CardBorder.Translation" Value="0,-2,8" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
 
+                                <Border x:Name="CardBorder">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
 
+                                        <!-- Product Name -->
+                                        <TextBlock Text="{x:Bind Name}"
+                                       Grid.Row="0"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"
+                                       TextWrapping="Wrap"
+                                       MaxLines="2"
+                                       TextTrimming="CharacterEllipsis"
+                                       Margin="0,0,0,4" />
+
+                                        <!-- Quantity -->
+                                        <TextBlock Text="Quantity: x1"
+                                       Grid.Row="1"
+                                       FontSize="14"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       Margin="0,0,0,8" />
+
+                                        <!-- Spacer -->
+                                        <Rectangle Grid.Row="2" />
+
+                                        <!-- Price -->
+                                        <Border Grid.Row="3"
+                                                CornerRadius="4"
+                                                Padding="8,4"
+                                                HorizontalAlignment="Right">
+                                            <TextBlock FontSize="16"
+                                                       FontWeight="Bold"
+                                                       Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}">
+                                                <Run Text="PKR "/>
+                                                <Run Text="{x:Bind Price}"/>
+                                            </TextBlock>
+                                        </Border>
+                                    </Grid>
+                                </Border>
                             </Border>
                         </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                    </GridView.ItemTemplate>
+                    <!-- Adaptive triggers for different screen sizes -->
+                    <GridView.ItemContainerStyle>
+                        <Style TargetType="GridViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Margin" Value="0"/>
+                            <Setter Property="Padding" Value="0"/>
+                        </Style>
+                    </GridView.ItemContainerStyle>
+                </GridView>
             </ScrollViewer>
         </Grid>
 
@@ -262,6 +344,7 @@
                    FontSize="16"
                    FontWeight="Bold"
                    Margin="0,0,0,8"
+                   FontFamily="Tahoma"
                    Style="{ThemeResource AccentButtonStyle}"
                    Click="PrintButton_Click"/>
 
@@ -273,6 +356,7 @@
                     Height="50"
                     FontSize="16"
                     FontWeight="Bold"
+                    FontFamily="Tahoma"
                     Margin="0,8,0,8"
                     Style="{ThemeResource AccentButtonStyle}"
                     Click="PreviewReceiptButton_Click"/>
