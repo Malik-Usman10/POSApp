@@ -332,7 +332,7 @@
                               Content="Paid" 
                               FontSize="18" 
                               Margin="0,0,0,12"
-                              IsChecked="True" />
+                              IsChecked="True"/>
                 </StackPanel>
 
                 <!-- Print Button -->
@@ -340,12 +340,13 @@
                    Grid.Row="4"
                    Content="Print Order"
                    HorizontalAlignment="Stretch"
+                   CornerRadius="25"
                    Height="50"
                    FontSize="16"
-                   FontWeight="Bold"
                    Margin="0,0,0,8"
                    FontFamily="Tahoma"
-                   Style="{ThemeResource AccentButtonStyle}"
+                   Foreground="White"
+                   Background="{ThemeResource SystemAccentColor}"
                    Click="PrintButton_Click"/>
 
                 <!-- Preview Receipt Button -->
@@ -353,12 +354,13 @@
                     Grid.Row="5"
                     Content="Preview Receipt"
                     HorizontalAlignment="Stretch"
+                    CornerRadius="25"
                     Height="50"
                     FontSize="16"
-                    FontWeight="Bold"
                     FontFamily="Tahoma"
                     Margin="0,8,0,8"
-                    Style="{ThemeResource AccentButtonStyle}"
+                    Foreground="White"
+                    Background="{ThemeResource SystemAccentColor}"
                     Click="PreviewReceiptButton_Click"/>
             </Grid>
         </Border>

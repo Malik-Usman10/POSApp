@@ -28,8 +28,9 @@
                     Height="40"
                     FontSize="16"
                     Margin="0,0,20,0"
+                    Padding="20,10,0 ,0"
                     TextChanged="ProductSearchBox_TextChanged"
-                     CornerRadius="4">
+                     CornerRadius="20">
                 <TextBox.Resources>
                     <Style TargetType="TextBox">
                         <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}"/>
@@ -44,8 +45,12 @@
                    Content="Create Product"
                    Height="40"
                    MinWidth="140"
-                   FontSize="14"
-                   FontWeight="SemiBold"
+                   CornerRadius="20"
+                   Padding="10,0"
+                   Foreground="Black"
+                   BorderThickness="1"
+                   FontSize="16"
+                   FontWeight="Medium"
                    Style="{ThemeResource AccentButtonStyle}"
                    Click="CreateProductButton_Click"/>
         </Grid>
@@ -105,18 +110,25 @@
                                            Orientation="Horizontal"
                                            VerticalAlignment="Center"
                                            Spacing="8">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Width" Value="100"/>
+                                            <Setter Property="Height" Value="40"/>
+                                            <Setter Property="FontSize" Value="14"/>
+                                            <Setter Property="FontWeight" Value="Medium"/>
+                                            <Setter Property="Padding" Value="10,0"/>
+                                            <Setter Property="CornerRadius" Value="20"/>
+                                            <Setter Property="Background" Value="{ThemeResource ControlFillColorDefaultBrush}"/>
+                                            <Setter Property="BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}"/>
+                                            <Setter Property="BorderThickness" Value="1"/>
+                                        </Style>
+                                    </StackPanel.Resources>
                                     <Button Content="Edit"
-                                           Width="80"
-                                           Height="35"
-                                           FontSize="14"
                                            Click="EditProduct_Click"
                                            Tag="{x:Bind}"/>
                                     <Button Content="Delete"
-                                           Width="80"
-                                           Height="35"
-                                           FontSize="14"
-                                           Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                            Click="DeleteProduct_Click"
+                                           Background="{ThemeResource SystemAccentColor}"
                                            Tag="{x:Bind}"/>
                                 </StackPanel>
                             </Grid>

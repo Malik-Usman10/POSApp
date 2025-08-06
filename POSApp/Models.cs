@@ -137,6 +137,7 @@ namespace POSApp
         private int _id;
         private DateTime _orderDate;
         private decimal _totalAmount;
+        private String? _name;
 
         public int Id
         {
@@ -144,6 +145,16 @@ namespace POSApp
             set
             {
                 _id = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public String? Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
                 OnPropertyChanged();
             }
         }

@@ -14,8 +14,6 @@
         <Grid Width="400">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="300"/>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -23,61 +21,15 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Image Section Header -->
-            <TextBlock Grid.Row="0"
-                   Text="Product Image"
-                   FontSize="16"
-                   FontWeight="SemiBold"
-                   Margin="0,0,0,10"/>
-
-            <!-- Image Display and Selection -->
-            <Border Grid.Row="1"
-                Background="{ThemeResource ControlFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource TextFillColorTertiaryBrush}"
-                BorderThickness="2"
-                CornerRadius="8"
-                Margin="0,0,0,20">
-                <Grid>
-                    <!-- Default Image Placeholder -->
-                    <StackPanel x:Name="ImagePlaceholder"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"
-                           Visibility="Visible">
-                        <FontIcon Glyph="&#xEB9F;"
-                             FontSize="48"
-                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                             HorizontalAlignment="Center"
-                             Margin="0,0,0,10"/>
-                        <TextBlock Text="Click to select image"
-                              FontSize="14"
-                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                              HorizontalAlignment="Center"/>
-                    </StackPanel>
-
-                    <!-- Selected Image -->
-                    <Image x:Name="ProductImage"
-                       Stretch="UniformToFill"
-                       Visibility="Collapsed"/>
-
-                    <!-- Click area for image selection -->
-                    <Button x:Name="SelectImageButton"
-                       Background="Transparent"
-                       BorderThickness="0"
-                       HorizontalAlignment="Stretch"
-                       VerticalAlignment="Stretch"
-                       Click="SelectImageButton_Click"/>
-                </Grid>
-            </Border>
-
             <!-- Product Name -->
-            <TextBlock Grid.Row="2"
+            <TextBlock Grid.Row="0"
                    Text="Product Name"
                    FontSize="16"
                    FontWeight="SemiBold"
                    Margin="0,0,0,8"/>
 
             <TextBox x:Name="ProductNameTextBox"
-                 Grid.Row="3"
+                 Grid.Row="1"
                  PlaceholderText="Enter product name..."
                  FontSize="14"
                  VerticalAlignment="Top"
@@ -93,13 +45,13 @@
             </TextBox>
 
             <!-- Product Category -->
-            <TextBlock Grid.Row="4"
+            <TextBlock Grid.Row="2"
                    Text="Product Category"
                    FontSize="16"
                    FontWeight="SemiBold"
                    Margin="0,0,0,8"/>
 
-            <ComboBox x:Name="CategoryComboBox" PlaceholderText="Select a category" Grid.Row="5" Margin="0,0,0,8">
+            <ComboBox x:Name="CategoryComboBox" PlaceholderText="Select a category" Grid.Row="3" Margin="0,0,0,8">
                 <ComboBoxItem Content="Karahi"/>
                 <ComboBoxItem Content="Handi"/>
                 <ComboBoxItem Content="Tikka"/>
@@ -109,14 +61,14 @@
             </ComboBox>
 
             <!-- Product Price -->
-            <TextBlock Grid.Row="6"
+            <TextBlock Grid.Row="4"
                    Text="Product Price (Rs)"
                    FontSize="16"
                    FontWeight="SemiBold"
                    />
 
             <NumberBox x:Name="ProductPriceNumberBox"
-                   Grid.Row="7"
+                   Grid.Row="5"
                    PlaceholderText="0.00"
                    FontSize="14"
                    Minimum="0"

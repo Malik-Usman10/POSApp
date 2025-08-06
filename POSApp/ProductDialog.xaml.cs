@@ -29,8 +29,7 @@ namespace POSApp
     public sealed partial class ProductDialog : ContentDialog
     {
         public Product Product { get; private set; }
-        private string _selectedImagePath;
-        private bool _isEditMode;
+        private readonly bool _isEditMode;
 
         public ProductDialog()
         {
@@ -75,89 +74,14 @@ namespace POSApp
                 {
                     ProductNameTextBox.Text = Product.Name ?? string.Empty;
                     ProductPriceNumberBox.Value = (double)Product.Price;
-
-                    bool imageLoaded = false;
-                    if (!string.IsNullOrEmpty(Product.ImagePath) && File.Exists(Product.ImagePath))
-                    {
-                        _selectedImagePath = Product.ImagePath;
-                        try
-                        {
-                            var bitmap = new BitmapImage();
-                            using (var fileStream = File.OpenRead(Product.ImagePath))
-                            {
-                                var randomAccessStream = fileStream.AsRandomAccessStream();
-                                await bitmap.SetSourceAsync(randomAccessStream);
-                            }
-                            ProductImage.Source = bitmap;
-                            ProductImage.Visibility = Visibility.Visible;
-                            ImagePlaceholder.Visibility = Visibility.Collapsed;
-                            imageLoaded = true;
-                        }
-                        catch
-                        {
-                            // If image loading fails, fall through to show placeholder
-                        }
-                    }
-                    if (!imageLoaded)
-                    {
-                        ProductImage.Source = null;
-                        ProductImage.Visibility = Visibility.Collapsed;
-                        ImagePlaceholder.Visibility = Visibility.Visible;
-                    }
+                    CategoryComboBox.SelectedItem = CategoryComboBox.Items
+                        .OfType<ComboBoxItem>()
+                        .FirstOrDefault(item => item.Content.ToString() == Product.Category);
                 }
             }
             catch (Exception ex)
             {
                 await ShowErrorDialog("Dialog Error", $"An error occurred: {ex.Message}");
-            }
-        }
-
-        private async void SelectImageButton_Click(object sender, RoutedEventArgs e)
-        {
-            var picker = new FileOpenPicker();
-            picker.FileTypeFilter.Add(".jpg");
-            picker.FileTypeFilter.Add(".jpeg");
-            picker.FileTypeFilter.Add(".png");
-            picker.FileTypeFilter.Add(".bmp");
-            picker.FileTypeFilter.Add(".gif");
-
-            // Get the current window handle
-            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
-            WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
-
-            var file = await picker.PickSingleFileAsync();
-            if (file != null)
-            {
-                try
-                {
-                    // Create images directory if it doesn't exist
-                    var localFolder = ApplicationData.Current.LocalFolder;
-                    var imagesFolder = await localFolder.CreateFolderAsync("Images", CreationCollisionOption.OpenIfExists);
-
-                    // Generate unique filename
-                    var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
-                    var destinationFile = await imagesFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
-
-                    // Copy the file
-                    await file.CopyAndReplaceAsync(destinationFile);
-
-                    _selectedImagePath = destinationFile.Path;
-
-                    // Display the image
-                    var bitmap = new BitmapImage();
-                    using (var stream = await destinationFile.OpenAsync(FileAccessMode.Read))
-                    {
-                        await bitmap.SetSourceAsync(stream);
-                    }
-
-                    ProductImage.Source = bitmap;
-                    ProductImage.Visibility = Visibility.Visible;
-                    ImagePlaceholder.Visibility = Visibility.Collapsed;
-                }
-                catch (Exception ex)
-                {
-                    await ShowErrorDialog("Error", $"Failed to process image: {ex.Message}");
-                }
             }
         }
 
@@ -191,11 +115,6 @@ namespace POSApp
                 Product.Name = ProductNameTextBox.Text.Trim();
                 Product.Price = (decimal)ProductPriceNumberBox.Value;
                 Product.Category = (CategoryComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty;
-
-                if (!string.IsNullOrEmpty(_selectedImagePath))
-                {
-                    Product.ImagePath = _selectedImagePath;
-                }
             }
             else
             {
@@ -204,16 +123,13 @@ namespace POSApp
                     Name = ProductNameTextBox.Text.Trim(),
                     Price = (decimal)ProductPriceNumberBox.Value,
                     Category = (CategoryComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty,
-                    ImagePath = _selectedImagePath ?? string.Empty
                 };
             }
         }
 
         private void ProductDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
-            // Clean up any resources if needed
         }
-
         private async void ShowValidationError(string message)
         {
             await ShowErrorDialog("Validation Error", message);

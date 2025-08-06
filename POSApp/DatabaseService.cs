@@ -38,6 +38,7 @@ namespace POSApp
                 
               CREATE TABLE IF NOT EXISTS Orders (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Name TEXT,
                     OrderDate TEXT NOT NULL,
                     IsPaid INTEGER NOT NULL,
                     TotalAmount DECIMAL(10,2) NOT NULL
@@ -157,13 +158,16 @@ namespace POSApp
             await connection.OpenAsync();
             var command = connection.CreateCommand();
             command.CommandText = @"
-                INSERT INTO Orders (OrderDate, IsPaid, TotalAmount) 
-                VALUES (@orderDate, @isPaid, @totalAmount);
+                INSERT INTO Orders (OrderDate, IsPaid, TotalAmount, Name) 
+                VALUES (@orderDate, @isPaid, @totalAmount, @Name);
                 SELECT last_insert_rowid();";
 
             command.Parameters.AddWithValue("@orderDate", order.OrderDate.ToString("s"));
             command.Parameters.AddWithValue("@isPaid", order.IsPaid ? 1 : 0);
             command.Parameters.AddWithValue("@totalAmount", order.TotalAmount);
+
+            command.Parameters.AddWithValue("@Name", string.IsNullOrEmpty(order.Name) ? DBNull.Value : order.Name);
+
 
             var id = Convert.ToInt32(await command.ExecuteScalarAsync());
             order.Id = id;
@@ -177,7 +181,7 @@ namespace POSApp
 
             var command = connection.CreateCommand();
             command.CommandText = @"
-                        SELECT Id, OrderDate, IsPaid, TotalAmount 
+                        SELECT Id, OrderDate, IsPaid, TotalAmount,Name 
                         FROM Orders
                         WHERE date(OrderDate) = date(@selectedDate)
                         ORDER BY OrderDate DESC;";
@@ -194,7 +198,8 @@ namespace POSApp
                     Id = reader.GetInt32(0),
                     OrderDate = reader.GetDateTime(1),
                     IsPaid = reader.GetInt32(2) == 1,
-                    TotalAmount = reader.GetDecimal(3)
+                    TotalAmount = reader.GetDecimal(3),
+                    Name = reader.IsDBNull(4) ? null : reader.GetString(4)
                 };
                 orders.Add(order);
             }

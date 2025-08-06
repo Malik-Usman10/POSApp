@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -62,5 +63,23 @@ public static class RawPrinterHelper
 
         Marshal.FreeCoTaskMem(pBytes);
         return success;
+    }
+    public static bool SendReceiptToVirtualPrinter(string host, int port, string receiptText)
+    {
+        try
+        {
+            using (TcpClient client = new TcpClient(host, port))
+            using (NetworkStream stream = client.GetStream())
+            {
+                byte[] bytes = Encoding.ASCII.GetBytes(receiptText);
+                stream.Write(bytes, 0, bytes.Length);
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Failed to send receipt: " + ex.Message);
+            return false;
+        }
     }
 }

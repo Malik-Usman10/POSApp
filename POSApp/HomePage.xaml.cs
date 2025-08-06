@@ -13,6 +13,7 @@ using Microsoft.UI.Xaml.Printing;
 using Windows.Foundation;
 using Windows.Graphics.Printing;
 using Windows.Graphics.Printing.OptionDetails;
+using Windows.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -113,9 +114,9 @@ namespace POSApp
                 }
 
                 // Highlight current
-                button.Background = new SolidColorBrush(Colors.SkyBlue);
+                button.Background = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"]);
                 button.Foreground = new SolidColorBrush(Colors.White);
-                button.BorderBrush = new SolidColorBrush(Colors.SkyBlue);
+                button.BorderBrush = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"]);
 
                 _selectedCategoryButton = button;
                 FilterProductsByCategory(category);
@@ -227,35 +228,100 @@ namespace POSApp
                 TotalAmount = _orderItems.Sum(item => item.Total)
             };
 
-            await _databaseService.InsertOrderAsync(order);
+            if (!order.IsPaid)
+            {
+                TextBox nameTextBox = new TextBox
+                {
+                    PlaceholderText = "Enter Customer Name",
+                };
 
-            await PrintOrderSlip();
+                var namedialog = new ContentDialog
+                {
+                    Title = "Customer Name",
+                    Content = nameTextBox,
+                    PrimaryButtonText = "Save",
+                    CloseButtonText = "Cancel",
+                    DefaultButton = ContentDialogButton.Primary,
+                    XamlRoot = this.XamlRoot
+                };
+                var result = await namedialog.ShowAsync();
 
-            _orderItems.Clear(); // Clear the order items after printing
-            UpdateSubtotal(); // Reset subtotal display
-            PaidCheckbox.IsChecked = true; // Reset paid checkbox
+                if (result == ContentDialogResult.Primary)
+                {
+                    string customerName = nameTextBox.Text.Trim();
+
+                    if (string.IsNullOrEmpty(customerName))
+                    {
+                        var warningDialog = new ContentDialog
+                        {
+                            Title = "Invalid Name",
+                            Content = "Please enter a valid customer name.",
+                            CloseButtonText = "OK",
+                            XamlRoot = this.XamlRoot
+                        };
+                        await warningDialog.ShowAsync();
+                        return;
+                    }
+                    order.Name = customerName;
+                }
+                else
+                {
+                    return; // User cancelled, do not proceed with printing
+                }
+            }
+
+            //Try to Print the Order Slip
+            bool printSuccess = await PrintOrderSlip();
+
+
+            if (printSuccess)
+            {
+                await _databaseService.InsertOrderAsync(order);
+                _orderItems.Clear(); // Clear the order items after printing
+                UpdateSubtotal(); // Reset subtotal display
+                PaidCheckbox.IsChecked = true; // Reset paid checkbox
+
+            }
         }
 
-        private async Task PrintOrderSlip()
+        private async Task<bool> PrintOrderSlip()
         {
-            var receipt = GenerateReceiptContent();
-            string printerName = Setting.LoadSavedPrinter();
-
-            if (string.IsNullOrEmpty(printerName))
+            try
             {
-                // Optional: show dialog if no printer selected
+                var receipt = GenerateReceiptContent();
+                string printerName = Setting.LoadSavedPrinter();
+
+                if (string.IsNullOrEmpty(printerName))
+                {
+                    // Optional: show dialog if no printer selected
+                    var dialog = new ContentDialog
+                    {
+                        Title = "No Printer Selected",
+                        Content = "Please select a printer in Settings before printing.",
+                        CloseButtonText = "OK",
+                        XamlRoot = this.XamlRoot
+                    };
+                    await dialog.ShowAsync();
+                    return false;
+                }
+
+                RawPrinterHelper.SendStringToPrinter(printerName, receipt);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Handle printing error
                 var dialog = new ContentDialog
                 {
-                    Title = "No Printer Selected",
-                    Content = "Please select a printer in Settings before printing.",
+                    Title = "Printing Error",
+                    Content = $"Failed to print receipt: {ex.Message}",
                     CloseButtonText = "OK",
                     XamlRoot = this.XamlRoot
                 };
                 await dialog.ShowAsync();
-                return;
+                return false;
             }
-
-            RawPrinterHelper.SendStringToPrinter(printerName, receipt);
         }
         private string GenerateReceiptContent()
         {
@@ -263,6 +329,7 @@ namespace POSApp
 
             // Header
             receipt.AppendLine("      WAQAS BARBEQUE & TIKKA HOUSE      ");
+            receipt.AppendLine("         Mobile No: 03024700067       ");
             receipt.AppendLine("       --------------------------       ");
             receipt.AppendLine($"Date: {DateTime.Now:dd MMM yyyy}    Time: {DateTime.Now:hh:mm tt}");
             receipt.AppendLine("       --------------------------      ");
@@ -281,7 +348,7 @@ namespace POSApp
                     : item.Product.Name;
 
                 string itemLine = $"{productName,-25} {item.Quantity} x {item.Product.Price,6:F2}";
-                string totalLine = $"{"",25}     PKR {itemTotal,8:F2}";
+                string totalLine = $"{"",20}     PKR {itemTotal,8:F2}";
 
                 receipt.AppendLine(itemLine);
                 receipt.AppendLine(totalLine);
@@ -294,12 +361,7 @@ namespace POSApp
             receipt.AppendLine("----------------------------------------");
             receipt.AppendLine($"Subtotal:                    PKR {subtotal,8:F2}");
 
-            // You can add tax, discount, or total if needed
-            // receipt.AppendLine($"Tax (5%):                    PKR {tax,8:F2}");
-            // receipt.AppendLine($"Total:                       PKR {total,8:F2}");
-
             receipt.AppendLine();
-
             return receipt.ToString();
 
         }

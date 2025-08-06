@@ -179,6 +179,7 @@
                                         Margin="4,2">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
@@ -187,8 +188,14 @@
                                                    FontSize="14"
                                                    VerticalAlignment="Center"
                                                    Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                            <TextBlock Text="{x:Bind Name, Mode=OneWay}"
+                                                        Grid.Column="1"
+                                                        FontSize="14"
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Center"
+                                                        Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
                                             <TextBlock Text="{x:Bind TotalAmount}" 
-                                                   Grid.Column="1" 
+                                                   Grid.Column="2" 
                                                    HorizontalAlignment="Right"
                                                    FontWeight="SemiBold"
                                                    FontSize="14"
