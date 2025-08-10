@@ -299,7 +299,25 @@ namespace POSApp
 
             return items;
         }
+        public async Task UpdateOrderAsync(int orderId, bool isPaid, string customerName)
+        {
+            using var connection = new SqliteConnection($"Data Source={_databasePath}");
+            await connection.OpenAsync();
 
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = @"
+                        UPDATE Orders
+                        SET IsPaid = @isPaid,
+                            Name = @name
+                        WHERE Id = @orderId;
+                    ";
+
+            cmd.Parameters.AddWithValue("@isPaid", isPaid ? 1 : 0);
+            cmd.Parameters.AddWithValue("@name", isPaid ? DBNull.Value : (object)customerName);
+            cmd.Parameters.AddWithValue("@orderId", orderId);
+
+            await cmd.ExecuteNonQueryAsync();
+        }
 
     }
 }

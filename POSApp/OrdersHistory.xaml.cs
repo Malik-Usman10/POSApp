@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -99,6 +100,91 @@ namespace POSApp
             // Optional: debug info
             System.Diagnostics.Debug.WriteLine($"Loaded {items.Count} items for order {order.Id}");
         }
+
+        private async void EditOrder_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is Order order)
+            {
+                await ShowOrderStatusDialogAsync(order);
+            }
+        }
+
+        private async Task ShowOrderStatusDialogAsync(Order order)
+        {
+
+            var comboBox = new ComboBox
+            {
+                ItemsSource = new List<string> { "Paid", "Unpaid" },
+                SelectedIndex = order.IsPaid ? 0 : 1,
+                Margin = new Thickness(0, 10, 0, 0)
+            };
+
+            var nameTextBox = new TextBox
+            {
+                PlaceholderText = "Enter customer name",
+                Text = order.Name ?? "",
+                Margin = new Thickness(0, 10, 0, 0),
+                Visibility = order.IsPaid ? Visibility.Collapsed : Visibility.Visible
+            };
+
+            comboBox.SelectionChanged += (s, e) =>
+            {
+                nameTextBox.Visibility = comboBox.SelectedIndex == 1
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            };
+
+            var stackPanel = new StackPanel();
+            stackPanel.Children.Add(comboBox);
+            stackPanel.Children.Add(nameTextBox);
+
+            var dialog = new ContentDialog
+            {
+                Title = $"Update Status - Order #{order.Id}",
+                Content = stackPanel,
+                PrimaryButtonText = "Save",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.XamlRoot
+            };
+
+            var result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                order.IsPaid = comboBox.SelectedIndex == 0;
+
+                if (!order.IsPaid)
+                {
+                    if (string.IsNullOrWhiteSpace(nameTextBox.Text))
+                    {
+                        await new ContentDialog
+                        {
+                            Title = "Missing Customer Name",
+                            Content = "Please enter a customer name for unpaid orders.",
+                            CloseButtonText = "OK",
+                            XamlRoot = this.XamlRoot
+                        }.ShowAsync();
+                        return;
+                    }
+                    order.Name = nameTextBox.Text.Trim();
+                }
+                else
+                {
+                    order.Name = null; // No name for paid orders
+                }
+
+                await _databaseService.UpdateOrderAsync(order.Id, order.IsPaid, order.Name);
+
+                // Refresh list after update
+                if (OrdersDatePicker.Date != null)
+                {
+                    LoadOrdersForSelectedDate(OrdersDatePicker.Date.DateTime);
+                }
+            }
+        }
+
+
 
         private void OrdersDatePicker_SelectedDateChanged(DatePicker sender, DatePickerSelectedValueChangedEventArgs args)
         {

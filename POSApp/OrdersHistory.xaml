@@ -95,6 +95,7 @@
                                                         <!-- Date -->
                                                         <ColumnDefinition Width="Auto"/>
                                                         <!-- Price -->
+                                                        <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
 
                                                     <!-- Order number -->
@@ -122,6 +123,20 @@
                                                                FontSize="14"
                                                                VerticalAlignment="Center"
                                                                Foreground="{ThemeResource SystemAccentColor}"/>
+                                                    <!-- Edit Icon -->
+                                                    <Button Click="EditOrder_Click"
+                                                                   CommandParameter="{x:Bind}"
+                                                                   Background="Transparent"
+                                                                   BorderThickness="0"
+                                                                   Margin="10,0,0,0"
+                                                                   HorizontalAlignment="Right"
+                                                                    Grid.Column="4">
+                                                        <FontIcon Glyph="&#xE70F;"     
+                                                              Foreground="{ThemeResource SystemAccentColor}"
+                                                              VerticalAlignment="Center"
+                                                              />
+                                                        <!-- Edit icon -->
+                                                    </Button>
                                                 </Grid>
                                             </DataTemplate>
                                         </Expander.HeaderTemplate>
@@ -237,6 +252,7 @@
                                                         <!-- Price -->
                                                         <ColumnDefinition Width="*"/>
                                                         <!--Name-->
+                                                        <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
 
                                                     <!-- Order number -->
@@ -272,6 +288,21 @@
                                                                FontSize="14"
                                                                VerticalAlignment="Center"
                                                                Foreground="{ThemeResource SystemAccentColor}"/>
+                                                    <!-- Edit Icon button -->
+                                                    <Button Click="EditOrder_Click"
+                                                                   CommandParameter="{x:Bind}"
+                                                                   Background="Transparent"
+                                                                   BorderThickness="0"
+                                                                   Margin="10,0,0,0"
+                                                                   HorizontalAlignment="Right"
+                                                                    Grid.Column="4">
+                                                        <FontIcon Glyph="&#xE70F;"     
+                                                              Foreground="{ThemeResource SystemAccentColor}"
+                                                              VerticalAlignment="Center"
+                                                              />
+                                                        <!-- Edit icon -->
+                                                    </Button>
+
                                                 </Grid>
                                             </DataTemplate>
                                         </Expander.HeaderTemplate>
