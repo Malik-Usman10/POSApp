@@ -43,6 +43,17 @@ namespace POSApp
                     IsPaid INTEGER NOT NULL,
                     TotalAmount DECIMAL(10,2) NOT NULL
                );
+
+                CREATE TABLE IF NOT EXISTS OrderItems (
+                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        OrderId INTEGER NOT NULL,
+                        ProductId INTEGER NOT NULL,
+                        Quantity INTEGER NOT NULL,
+                        UnitPrice DECIMAL(10,2) NOT NULL,
+                        TotalPrice DECIMAL(10,2) NOT NULL,
+                        FOREIGN KEY (OrderId) REFERENCES Orders(Id) ON DELETE CASCADE,
+                        FOREIGN KEY (ProductId) REFERENCES Products(Id) ON DELETE CASCADE
+                    );
             ";
             await createTableCommand.ExecuteNonQueryAsync();
         }
@@ -156,41 +167,76 @@ namespace POSApp
         {
             using var connection = new SqliteConnection($"Data Source={_databasePath}");
             await connection.OpenAsync();
-            var command = connection.CreateCommand();
-            command.CommandText = @"
-                INSERT INTO Orders (OrderDate, IsPaid, TotalAmount, Name) 
-                VALUES (@orderDate, @isPaid, @totalAmount, @Name);
-                SELECT last_insert_rowid();";
 
-            command.Parameters.AddWithValue("@orderDate", order.OrderDate.ToString("s"));
-            command.Parameters.AddWithValue("@isPaid", order.IsPaid ? 1 : 0);
-            command.Parameters.AddWithValue("@totalAmount", order.TotalAmount);
+            using var transaction = connection.BeginTransaction();
 
-            command.Parameters.AddWithValue("@Name", string.IsNullOrEmpty(order.Name) ? DBNull.Value : order.Name);
+            try
+            {
+                // Insert into Orders table
+                var orderCommand = connection.CreateCommand();
+                orderCommand.Transaction = transaction;
+                orderCommand.CommandText = @"
+                        INSERT INTO Orders (OrderDate, IsPaid, TotalAmount, Name) 
+                        VALUES (@orderDate, @isPaid, @totalAmount, @Name);
+                        SELECT last_insert_rowid();";
 
+                orderCommand.Parameters.AddWithValue("@orderDate", order.OrderDate.ToString("s"));
+                orderCommand.Parameters.AddWithValue("@isPaid", order.IsPaid ? 1 : 0);
+                orderCommand.Parameters.AddWithValue("@totalAmount", order.TotalAmount);
+                orderCommand.Parameters.AddWithValue("@Name", string.IsNullOrEmpty(order.Name) ? DBNull.Value : order.Name);
 
-            var id = Convert.ToInt32(await command.ExecuteScalarAsync());
-            order.Id = id;
-            return id;
+                var orderId = Convert.ToInt32(await orderCommand.ExecuteScalarAsync());
+                order.Id = orderId;
+
+                // Insert corresponding OrderItems
+                foreach (var item in order.Items)
+                {
+                    var itemCommand = connection.CreateCommand();
+                    itemCommand.Transaction = transaction;
+                    itemCommand.CommandText = @"
+                                    INSERT INTO OrderItems (OrderId, ProductId, Quantity, UnitPrice, TotalPrice)
+                                    VALUES (@orderId, @productId, @quantity, @unitPrice, @totalPrice);";
+
+                    itemCommand.Parameters.AddWithValue("@orderId", orderId);
+                    itemCommand.Parameters.AddWithValue("@productId", item.ProductId);
+                    itemCommand.Parameters.AddWithValue("@quantity", item.Quantity);
+                    itemCommand.Parameters.AddWithValue("@unitPrice", item.UnitPrice);
+                    itemCommand.Parameters.AddWithValue("@totalPrice", item.Total);
+
+                    await itemCommand.ExecuteNonQueryAsync();
+                }
+
+                // Commit the transaction
+                await transaction.CommitAsync();
+
+                return orderId;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
+
 
         public async Task<List<Order>> LoadOrdersByDateAsync(DateTime date)
         {
             using var connection = new SqliteConnection($"Data Source={_databasePath}");
             await connection.OpenAsync();
 
-            var command = connection.CreateCommand();
-            command.CommandText = @"
-                        SELECT Id, OrderDate, IsPaid, TotalAmount,Name 
-                        FROM Orders
-                        WHERE date(OrderDate) = date(@selectedDate)
-                        ORDER BY OrderDate DESC;";
+            var dateString = date.Date.ToString("yyyy-MM-dd");
 
-            command.Parameters.AddWithValue("@selectedDate", date.Date);
+            var orderCmd = connection.CreateCommand();
+            orderCmd.CommandText = @"
+                            SELECT Id, OrderDate, IsPaid, TotalAmount, Name
+                            FROM Orders
+                            WHERE date(OrderDate) = date(@selectedDate)
+                            ORDER BY OrderDate DESC;";
+            orderCmd.Parameters.AddWithValue("@selectedDate", dateString);
 
             var orders = new List<Order>();
 
-            using var reader = await command.ExecuteReaderAsync();
+            using var reader = await orderCmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 var order = new Order
@@ -205,6 +251,53 @@ namespace POSApp
             }
 
             return orders;
+        }
+
+        public async Task<List<OrderItem>> GetOrderItemsAsync(int orderId)
+        {
+            using var connection = new SqliteConnection($"Data Source={_databasePath}");
+            await connection.OpenAsync();
+
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = @"
+                            SELECT oi.Id, oi.ProductId, oi.Quantity, oi.UnitPrice, oi.TotalPrice,
+                                   p.Name, p.Price, p.Category, p.ImagePath
+                            FROM OrderItems oi
+                            LEFT JOIN Products p ON p.Id = oi.ProductId
+                            WHERE oi.OrderId = @orderId;";
+
+            cmd.Parameters.AddWithValue("@orderId", orderId);
+
+            var items = new List<OrderItem>();
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var item = new OrderItem
+                {
+                    Id = reader.GetInt32(0),
+                    OrderId = orderId,
+                    ProductId = reader.GetInt32(1),
+                    Quantity = reader.GetInt32(2),
+                    UnitPrice = reader.GetDecimal(3)
+                };
+
+                if (!reader.IsDBNull(5))
+                {
+                    item.Product = new Product
+                    {
+                        Id = item.ProductId,
+                        Name = reader.IsDBNull(5) ? null : reader.GetString(5),
+                        Price = reader.IsDBNull(6) ? 0 : reader.GetDecimal(6),
+                        Category = reader.IsDBNull(7) ? null : reader.GetString(7),
+                        ImagePath = reader.IsDBNull(8) ? null : reader.GetString(8)
+                    };
+                }
+
+                items.Add(item);
+            }
+
+            return items;
         }
 
 

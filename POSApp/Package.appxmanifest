@@ -5,12 +5,13 @@
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap rescap">
+  xmlns:uap18="http://schemas.microsoft.com/appx/manifest/uap/windows10/18"
+  IgnorableNamespaces="uap rescap uap18">
 
   <Identity
     Name="570237fb-8c84-489f-acae-fb82a8f045cc"
-    Publisher="CN=M Usman"
-    Version="1.0.1.0" />
+    Publisher="CN=MrBhola"
+    Version="1.3.5.0" />
 
   <mp:PhoneIdentity PhoneProductId="570237fb-8c84-489f-acae-fb82a8f045cc" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -32,7 +33,7 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="$targetentrypoint$">
+      EntryPoint="$targetentrypoint$" uap18:TrustLevel="appContainer" uap18:RuntimeBehavior="windowsApp">
       <uap:VisualElements
         DisplayName="POSApp"
         Description="Modern Point of Sale System"

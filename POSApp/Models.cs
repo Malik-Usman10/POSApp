@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Media.Imaging;
-using System.IO;
 
 namespace POSApp
 {
@@ -95,6 +96,11 @@ namespace POSApp
 
     public class OrderItem : INotifyPropertyChanged
     {
+        public int OrderId { get; set; }   // FK to Orders table
+        public int ProductId { get; set; } // FK to Products table
+
+        public int Id { get; set; }
+        private decimal _unitPrice;
         private Product _product;
         private int _quantity;
 
@@ -104,6 +110,11 @@ namespace POSApp
             set
             {
                 _product = value;
+                if (_product != null)
+                {
+                    ProductId = _product.Id;
+                    UnitPrice = _product.Price;
+                }
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(Total));
             }
@@ -119,8 +130,17 @@ namespace POSApp
                 OnPropertyChanged(nameof(Total));
             }
         }
-
-        public decimal Total => Product?.Price * Quantity ?? 0;
+        public decimal UnitPrice
+        {
+            get => _unitPrice;
+            set
+            {
+                _unitPrice = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(Total));
+            }
+        }
+        public decimal Total => Quantity * UnitPrice;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -138,6 +158,8 @@ namespace POSApp
         private DateTime _orderDate;
         private decimal _totalAmount;
         private String? _name;
+        private ObservableCollection<OrderItem> _items = new();
+
 
         public int Id
         {
@@ -161,6 +183,7 @@ namespace POSApp
         public DateTime OrderDate
         {
             get => _orderDate;
+
             set
             {
                 _orderDate = value;
@@ -186,7 +209,22 @@ namespace POSApp
                 OnPropertyChanged();
             }
         }
+        public ObservableCollection<OrderItem> Items
+        {
+            get => _items;
+            set
+            {
+                _items = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ItemCount));
+            }
+        }
 
+        //Convert Date into dd/MM/yyyy format for display
+        public string OrderDateFormatted => _orderDate.ToString("dd/MM/yyyy");
+
+
+        public int ItemCount => Items?.Count ?? 0;
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

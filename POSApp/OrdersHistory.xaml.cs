@@ -41,27 +41,63 @@ namespace POSApp
 
         private async void LoadOrdersForSelectedDate(DateTime selectedDate)
         {
-            _paidOrders.Clear();
-            _unpaidOrders.Clear();
-
-            var allOrders = await _databaseService.LoadOrdersByDateAsync(selectedDate);
-
-            foreach (var order in allOrders)
+            try
             {
-                if (order.IsPaid)
-                    _paidOrders.Add(order);
-                else
-                    _unpaidOrders.Add(order);
+                // Clear old data
+                _paidOrders.Clear();
+                _unpaidOrders.Clear();
+
+                // Get all orders for the selected date
+                var allOrders = await _databaseService.LoadOrdersByDateAsync(selectedDate);
+
+                // Separate into paid/unpaid lists
+                foreach (var order in allOrders)
+                {
+                    if (order.IsPaid)
+                        _paidOrders.Add(order);
+                    else
+                        _unpaidOrders.Add(order);
+                }
+
+                // Bind only once after filling collections
+                PaidOrdersListView.ItemsSource = _paidOrders;
+                UnpaidOrdersListView.ItemsSource = _unpaidOrders;
+
+                // Update totals
+                PaidTotalRun.Text = _paidOrders.Sum(o => o.TotalAmount).ToString("F2");
+                UnpaidTotalRun.Text = _unpaidOrders.Sum(o => o.TotalAmount).ToString("F2");
             }
+            catch (Exception ex)
+            {
+                // Optional: show an error dialog or log
+                Console.WriteLine($"Error loading orders: {ex.Message}");
+            }
+        }
 
-            PaidOrdersListView.ItemsSource = _paidOrders;
-            UnpaidOrdersListView.ItemsSource = _unpaidOrders;
+        private async void Expander_Expanding(Expander sender, ExpanderExpandingEventArgs args)
+        {
+            if (!(sender.DataContext is Order order))
+                return;
 
-            var paidTotal = _paidOrders.Sum(o => o.TotalAmount);
-            var unpaidTotal = _unpaidOrders.Sum(o => o.TotalAmount);
+            // If already loaded, do nothing
+            if (order.Items != null && order.Items.Count > 0)
+                return;
 
-            PaidTotalRun.Text = paidTotal.ToString("F2");
-            UnpaidTotalRun.Text = unpaidTotal.ToString("F2");
+            // Optionally show a small loading indicator here
+
+            // Fetch items from DB
+            var items = await _databaseService.GetOrderItemsAsync(order.Id);
+
+            // If Items was null for some reason, create it once
+            if (order.Items == null)
+                order.Items = new ObservableCollection<OrderItem>();
+
+            // Add to the existing collection (this notifies the UI)
+            foreach (var it in items)
+                order.Items.Add(it);
+
+            // Optional: debug info
+            System.Diagnostics.Debug.WriteLine($"Loaded {items.Count} items for order {order.Id}");
         }
 
         private void OrdersDatePicker_SelectedDateChanged(DatePicker sender, DatePickerSelectedValueChangedEventArgs args)

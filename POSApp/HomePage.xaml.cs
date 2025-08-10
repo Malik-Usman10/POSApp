@@ -225,8 +225,19 @@ namespace POSApp
             {
                 OrderDate = DateTime.Now,
                 IsPaid = PaidCheckbox.IsChecked == true,
-                TotalAmount = _orderItems.Sum(item => item.Total)
+                TotalAmount = _orderItems.Sum(item => item.Total),
+                Items = new ObservableCollection<OrderItem>() // make sure it's initialized
             };
+
+            foreach (var item in _orderItems)
+            {
+                order.Items.Add(new OrderItem
+                {
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.UnitPrice,
+                });
+            }
 
             if (!order.IsPaid)
             {
